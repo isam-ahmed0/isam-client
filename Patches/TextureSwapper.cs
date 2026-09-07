@@ -10,6 +10,7 @@ namespace IsamClient.Patches
         private float _timer;
         private const float ScanInterval = 0.5f;
         private bool _downloaded;
+        private bool _loggedMapping;
 
         public TextureSwapper(IntPtr ptr) : base(ptr) { }
 
@@ -24,15 +25,30 @@ namespace IsamClient.Patches
             {
                 if (!_downloaded)
                 {
-                    Utils.AssetLoader.DownloadAllFromGitHub();
+                    Debug.Log("[isam-client] Cloning assets repo...");
+                    Utils.AssetLoader.CloneAssetsRepo();
                     _downloaded = true;
+                    Debug.Log("[isam-client] Assets repo cloned");
                 }
 
                 if (_mapping == null || _mapping.Count == 0)
                     _mapping = Utils.AssetLoader.GetMapping();
 
                 if (_mapping == null || _mapping.Count == 0)
+                {
+                    if (!_loggedMapping)
+                    {
+                        Debug.Log("[isam-client] No replacement textures found in assets folder");
+                        _loggedMapping = true;
+                    }
                     return;
+                }
+
+                if (!_loggedMapping)
+                {
+                    Debug.Log($"[isam-client] Found {_mapping.Count} replacement texture(s): {string.Join(", ", _mapping.Keys)}");
+                    _loggedMapping = true;
+                }
 
                 var renderers = FindObjectsOfType<SpriteRenderer>();
                 foreach (var sr in renderers)
@@ -46,11 +62,15 @@ namespace IsamClient.Patches
 
                     var replacement = Utils.AssetLoader.LoadSpriteFromDisk(fileName);
                     if (replacement != null)
+                    {
                         sr.sprite = replacement;
+                        Debug.Log($"[isam-client] Replaced sprite: {spriteName}");
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.LogError($"[isam-client] TextureSwapper error: {ex.Message}");
             }
         }
     }
