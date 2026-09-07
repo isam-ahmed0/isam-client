@@ -7,7 +7,7 @@ namespace IsamClient.Utils
 {
     public static class AssetLoader
     {
-        private const string GitHubBaseUrl = "https://raw.githubusercontent.com/YOUR_USER/isam-client-assets/main/";
+        private const string GitHubBaseUrl = "https://raw.githubusercontent.com/isam-ahmed0/isam-client-assets/main/";
         private const string DataFolder = "isam-client_data";
         private const string AssetsSubfolder = "assets";
 
