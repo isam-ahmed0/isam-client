@@ -8,8 +8,8 @@ namespace IsamClient.Patches
     {
         private static readonly Dictionary<string, string> SpriteMappings = new()
         {
-            { "title_logo", "title_logo.png" },
-            { "InnerslothLogo", "InnerslothLogo.png" },
+            { "title_logo", "logoImage.png" },
+            { "InnerslothLogo", "logoImage.png" },
         };
 
         private float _timer;

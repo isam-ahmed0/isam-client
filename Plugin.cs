@@ -17,7 +17,6 @@ namespace IsamClient
 
             var go = new GameObject("IsamClient");
             Object.DontDestroyOnLoad(go);
-            go.hideFlags = HideFlags.HideAndDontSave;
             go.AddComponent<Patches.LogoSwapper>();
             go.AddComponent<Patches.WatermarkRenderer>();
 

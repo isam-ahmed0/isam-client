@@ -42,7 +42,6 @@ namespace IsamClient.Patches
         {
             var go = new GameObject("IsamClientWatermark");
             UnityEngine.Object.DontDestroyOnLoad(go);
-            go.hideFlags = HideFlags.HideAndDontSave;
 
             var canvas = go.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
