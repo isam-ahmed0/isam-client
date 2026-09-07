@@ -1,36 +1,45 @@
-using HarmonyLib;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace IsamClient.Patches
 {
-    [HarmonyPatch(typeof(SpriteRenderer), nameof(SpriteRenderer.OnEnable))]
-    public static class LogoPatcher
+    public class LogoSwapper : MonoBehaviour
     {
-        private const float DefaultPPU = 100f;
-        private static readonly Vector2 DefaultPivot = new Vector2(0.5f, 0.5f);
-
-        [HarmonyPostfix]
-        public static void Postfix(SpriteRenderer __instance)
+        private static readonly Dictionary<string, string> SpriteMappings = new()
         {
+            { "title_logo", "title_logo.png" },
+            { "InnerslothLogo", "InnerslothLogo.png" },
+        };
+
+        private float _timer;
+        private const float ScanInterval = 0.5f;
+
+        public LogoSwapper(IntPtr ptr) : base(ptr) { }
+
+        private void Update()
+        {
+            _timer += Time.deltaTime;
+            if (_timer < ScanInterval)
+                return;
+            _timer = 0f;
+
             try
             {
-                if (__instance.sprite == null)
-                    return;
+                var renderers = FindObjectsOfType<SpriteRenderer>();
+                foreach (var sr in renderers)
+                {
+                    if (sr == null || sr.sprite == null)
+                        continue;
 
-                var spriteName = __instance.sprite.name;
-                string targetFile = null;
+                    var spriteName = sr.sprite.name;
+                    if (!SpriteMappings.TryGetValue(spriteName, out var fileName))
+                        continue;
 
-                if (spriteName == "title_logo")
-                    targetFile = "title_logo.png";
-                else if (spriteName == "InnerslothLogo")
-                    targetFile = "InnerslothLogo.png";
-
-                if (targetFile == null)
-                    return;
-
-                var replacement = Utils.AssetLoader.LoadSpriteFromDisk(targetFile, DefaultPPU, DefaultPivot);
-                if (replacement != null)
-                    __instance.sprite = replacement;
+                    var replacement = Utils.AssetLoader.LoadSpriteFromDisk(fileName);
+                    if (replacement != null)
+                        sr.sprite = replacement;
+                }
             }
             catch
             {

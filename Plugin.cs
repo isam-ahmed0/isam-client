@@ -1,27 +1,31 @@
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
+using UnityEngine;
 
 namespace IsamClient
 {
     [BepInPlugin("com.isam.isam-client", "isam-client", "1.0.0")]
     public class Plugin : BasePlugin
     {
-        private Harmony _harmony;
-
         public override void Load()
         {
             Log.LogInfo("isam-client v1.0.0 loaded");
 
-            _harmony = new Harmony("com.isam.isam-client");
-            _harmony.PatchAll(typeof(Plugin).Assembly);
+            ClassInjector.RegisterTypeInIl2Cpp<Patches.LogoSwapper>();
+            ClassInjector.RegisterTypeInIl2Cpp<Patches.WatermarkRenderer>();
 
-            Log.LogInfo("isam-client patches applied");
+            var go = new GameObject("IsamClient");
+            Object.DontDestroyOnLoad(go);
+            go.hideFlags = HideFlags.HideAndDontSave;
+            go.AddComponent<Patches.LogoSwapper>();
+            go.AddComponent<Patches.WatermarkRenderer>();
+
+            Log.LogInfo("isam-client components registered");
         }
 
         public override bool Unload()
         {
-            _harmony?.UnpatchSelf();
             Log.LogInfo("isam-client unloaded");
             return true;
         }
