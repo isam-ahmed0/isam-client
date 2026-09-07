@@ -6,14 +6,10 @@ namespace IsamClient.Patches
 {
     public class LogoSwapper : MonoBehaviour
     {
-        private static readonly Dictionary<string, string> SpriteMappings = new()
-        {
-            { "title_logo", "logoImage.png" },
-            { "InnerslothLogo", "logoImage.png" },
-        };
-
+        private Dictionary<string, string> _mapping;
         private float _timer;
         private const float ScanInterval = 0.5f;
+        private bool _downloaded;
 
         public LogoSwapper(IntPtr ptr) : base(ptr) { }
 
@@ -26,6 +22,18 @@ namespace IsamClient.Patches
 
             try
             {
+                if (!_downloaded)
+                {
+                    Utils.AssetLoader.DownloadAllFromGitHub();
+                    _downloaded = true;
+                }
+
+                if (_mapping == null || _mapping.Count == 0)
+                    _mapping = Utils.AssetLoader.GetMapping();
+
+                if (_mapping == null || _mapping.Count == 0)
+                    return;
+
                 var renderers = FindObjectsOfType<SpriteRenderer>();
                 foreach (var sr in renderers)
                 {
@@ -33,7 +41,7 @@ namespace IsamClient.Patches
                         continue;
 
                     var spriteName = sr.sprite.name;
-                    if (!SpriteMappings.TryGetValue(spriteName, out var fileName))
+                    if (!_mapping.TryGetValue(spriteName, out var fileName))
                         continue;
 
                     var replacement = Utils.AssetLoader.LoadSpriteFromDisk(fileName);
