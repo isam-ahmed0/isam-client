@@ -12,12 +12,12 @@ namespace IsamClient
         {
             Log.LogInfo("isam-client v1.0.0 loaded");
 
-            ClassInjector.RegisterTypeInIl2Cpp<Patches.LogoSwapper>();
+            ClassInjector.RegisterTypeInIl2Cpp<Patches.TextureSwapper>();
             ClassInjector.RegisterTypeInIl2Cpp<Patches.WatermarkRenderer>();
 
             var go = new GameObject("IsamClient");
             Object.DontDestroyOnLoad(go);
-            go.AddComponent<Patches.LogoSwapper>();
+            go.AddComponent<Patches.TextureSwapper>();
             go.AddComponent<Patches.WatermarkRenderer>();
 
             Log.LogInfo("isam-client components registered");

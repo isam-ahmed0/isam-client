@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace IsamClient.Patches
 {
-    public class LogoSwapper : MonoBehaviour
+    public class TextureSwapper : MonoBehaviour
     {
         private Dictionary<string, string> _mapping;
         private float _timer;
         private const float ScanInterval = 0.5f;
         private bool _downloaded;
 
-        public LogoSwapper(IntPtr ptr) : base(ptr) { }
+        public TextureSwapper(IntPtr ptr) : base(ptr) { }
 
         private void Update()
         {
